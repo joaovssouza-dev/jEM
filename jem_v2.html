@@ -1,0 +1,2176 @@
+<!doctype html>
+<html lang="pt-BR" data-theme="light">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>JEM — Aluguel de chácaras, ranchos e sítios</title>
+  <meta name="description"
+    content="JEM conecta proprietários e visitantes de chácaras, ranchos e sítios. Reserve com segurança, simples e direto." />
+
+  <!-- Material Symbols (ícones) -->
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0&display=swap" />
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fraunces:opsz,wght@9..144,600;9..144,700;9..144,800&display=swap" />
+
+  <!-- Leaflet -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script defer src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <!-- Swiper -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+  <script defer src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+
+  <!-- FullCalendar -->
+  <script defer src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js"></script>
+
+  <!-- Chart.js -->
+  <script defer src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+  <style>
+    :root {
+      --green-900: #1d3327;
+      --green-800: #244532;
+      --green-700: #2f5a41;
+      --green-600: #3a7152;
+      --green-500: #4a8a64;
+      --green-100: #dfeadf;
+      --terracota: #c0623a;
+      --terracota-700: #9a4a28;
+      --sand-50: #faf6ee;
+      --sand-100: #f3ecdc;
+      --sand-200: #e7dcc3;
+      --sky-50: #eef6f9;
+      --sky-100: #dbe9f0;
+      --ink: #1a1a1a;
+      --ink-soft: #3a3a3a;
+      --muted: #6b6b6b;
+      --line: #e6dec9;
+      --white: #ffffff;
+      --danger: #c0392b;
+      --warn: #d98c2b;
+      --ok: #2f8f5a;
+
+      --bg: var(--sand-50);
+      --surface: #ffffff;
+      --surface-2: var(--sand-100);
+      --text: var(--ink);
+      --text-soft: var(--ink-soft);
+      --text-muted: var(--muted);
+      --border: var(--line);
+      --brand: var(--green-700);
+      --brand-strong: var(--green-800);
+      --brand-soft: var(--green-100);
+      --accent: var(--terracota);
+      --confidence: var(--sky-100);
+
+      --radius-sm: 10px;
+      --radius: 16px;
+      --radius-lg: 22px;
+      --shadow-1: 0 1px 2px rgba(20, 30, 20, .05), 0 4px 14px rgba(20, 30, 20, .06);
+      --shadow-2: 0 6px 20px rgba(20, 30, 20, .10);
+      --shadow-3: 0 14px 40px rgba(20, 30, 20, .18);
+
+      --tap: 44px;
+      --container: 1200px;
+
+      --font-ui: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+      --font-display: 'Fraunces', Georgia, serif;
+    }
+
+    [data-theme="dark"] {
+      --bg: #10140f;
+      --surface: #181d17;
+      --surface-2: #1f2620;
+      --text: #f1efe7;
+      --text-soft: #d6d3c7;
+      --text-muted: #9c9c92;
+      --border: #2a3127;
+      --brand: #7fb893;
+      --brand-strong: #a4d2b6;
+      --brand-soft: #22301f;
+      --accent: #e58a5e;
+      --confidence: #1f2a26;
+      --shadow-1: 0 1px 2px rgba(0, 0, 0, .3), 0 4px 14px rgba(0, 0, 0, .35);
+      --shadow-2: 0 6px 20px rgba(0, 0, 0, .45);
+      --shadow-3: 0 14px 40px rgba(0, 0, 0, .55);
+    }
+
+    * {
+      box-sizing: border-box
+    }
+
+    html,
+    body {
+      margin: 0;
+      padding: 0
+    }
+
+    html {
+      -webkit-text-size-adjust: 100%
+    }
+
+    body {
+      font-family: var(--font-ui);
+      font-size: 17px;
+      line-height: 1.5;
+      color: var(--text);
+      background: var(--bg);
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    img {
+      max-width: 100%;
+      display: block
+    }
+
+    button {
+      font-family: inherit;
+      cursor: pointer;
+      border: none;
+      background: none;
+      color: inherit
+    }
+
+    a {
+      color: var(--brand-strong);
+      text-decoration: none
+    }
+
+    a:hover {
+      text-decoration: underline
+    }
+
+    input,
+    select,
+    textarea {
+      font-family: inherit;
+      font-size: 16px;
+      color: var(--text)
+    }
+
+    :focus-visible {
+      outline: 3px solid var(--brand);
+      outline-offset: 2px;
+      border-radius: 6px
+    }
+
+    .icon {
+      font-family: 'Material Symbols Rounded';
+      font-weight: normal;
+      font-style: normal;
+      font-size: 22px;
+      line-height: 1;
+      letter-spacing: normal;
+      text-transform: none;
+      display: inline-block;
+      white-space: nowrap;
+      direction: ltr;
+      -webkit-font-smoothing: antialiased;
+      vertical-align: middle;
+      font-feature-settings: 'liga';
+      -webkit-font-feature-settings: 'liga'
+    }
+
+    .icon.sm {
+      font-size: 18px
+    }
+
+    .icon.lg {
+      font-size: 28px
+    }
+
+    .container {
+      max-width: var(--container);
+      margin: 0 auto;
+      padding: 0 20px
+    }
+
+    /* ========== HEADER ========== */
+    .appbar {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: color-mix(in srgb, var(--surface) 92%, transparent);
+      backdrop-filter: saturate(140%) blur(10px);
+      -webkit-backdrop-filter: saturate(140%) blur(10px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .appbar .row {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      height: 72px
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-family: var(--font-display);
+      font-weight: 800;
+      font-size: 24px;
+      color: var(--brand-strong);
+      letter-spacing: -.01em
+    }
+
+    .brand .mark {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, var(--green-700), var(--green-500));
+      display: grid;
+      place-items: center;
+      color: #fff;
+      box-shadow: inset 0 -2px 0 rgba(0, 0, 0, .1);
+    }
+
+    .brand .mark .icon {
+      color: #fff;
+      font-size: 22px
+    }
+
+    /* barra de busca simplificada */
+    .search-pill {
+      flex: 1;
+      max-width: 580px;
+      display: flex;
+      align-items: center;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      box-shadow: var(--shadow-1);
+      padding: 4px 4px 4px 18px;
+      min-height: 56px;
+    }
+
+    .search-pill input {
+      border: none;
+      background: transparent;
+      width: 100%;
+      font-size: 16px;
+      padding: 8px 0;
+    }
+
+    .search-pill input:focus {
+      outline: none
+    }
+
+    .search-pill .go {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: var(--brand);
+      color: #fff;
+      display: grid;
+      place-items: center;
+      transition: transform .15s ease, background .15s;
+      flex-shrink: 0;
+    }
+
+    .search-pill .go:hover {
+      background: var(--brand-strong);
+      transform: scale(1.04)
+    }
+
+    .appbar .right {
+      display: flex;
+      align-items: center;
+      gap: 8px
+    }
+
+    .icon-btn {
+      width: var(--tap);
+      height: var(--tap);
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      color: var(--text);
+      border: 1px solid var(--border);
+      background: var(--surface);
+      transition: background .15s, transform .15s;
+    }
+
+    .icon-btn:hover {
+      background: var(--surface-2);
+      transform: translateY(-1px)
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      height: var(--tap);
+      padding: 0 18px;
+      border-radius: 999px;
+      font-weight: 600;
+      font-size: 15px;
+      background: var(--brand);
+      color: #fff;
+      transition: background .15s, transform .15s, box-shadow .15s;
+    }
+
+    .btn:hover {
+      background: var(--brand-strong);
+      transform: translateY(-1px);
+      box-shadow: var(--shadow-2)
+    }
+
+    .btn.ghost {
+      background: transparent;
+      color: var(--text);
+      border: 1px solid var(--border)
+    }
+
+    .btn.ghost:hover {
+      background: var(--surface-2)
+    }
+
+    .btn.accent {
+      background: var(--accent)
+    }
+
+    .btn.accent:hover {
+      background: var(--terracota-700)
+    }
+
+    .btn.danger {
+      background: var(--danger)
+    }
+
+    .btn.block {
+      width: 100%;
+      justify-content: center
+    }
+
+    .btn.lg {
+      height: 54px;
+      font-size: 17px;
+      padding: 0 22px
+    }
+
+    .btn.dark {
+      background: var(--ink);
+      color: #fff
+    }
+
+    .btn[disabled] {
+      opacity: .5;
+      cursor: not-allowed
+    }
+
+    /* tabs / chips */
+    .tabs {
+      display: flex;
+      gap: 4px;
+      background: var(--surface-2);
+      padding: 4px;
+      border-radius: 999px;
+      border: 1px solid var(--border)
+    }
+
+    .tabs button {
+      padding: 8px 16px;
+      border-radius: 999px;
+      font-weight: 600;
+      color: var(--text-soft);
+      min-height: 40px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px
+    }
+
+    .tabs button.active {
+      background: var(--surface);
+      color: var(--brand-strong);
+      box-shadow: var(--shadow-1)
+    }
+
+    .vibe-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 24px
+    }
+
+    .vibe-chips .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 10px 18px;
+      border-radius: 999px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      font-weight: 600;
+      color: var(--text-soft);
+      cursor: pointer;
+      transition: all .2s;
+    }
+
+    .vibe-chips .chip.active {
+      background: var(--brand);
+      color: #fff;
+      border-color: transparent
+    }
+
+    /* ========== HERO / PAGE TITLES ========== */
+    .page-head {
+      padding: 28px 0 8px
+    }
+
+    .page-head h1 {
+      font-family: var(--font-display);
+      font-weight: 800;
+      font-size: clamp(28px, 4vw, 40px);
+      margin: 0 0 6px;
+      letter-spacing: -.02em
+    }
+
+    .page-head .accent {
+      color: var(--accent)
+    }
+
+    .page-head p {
+      margin: 0;
+      color: var(--text-muted);
+      font-size: 16px
+    }
+
+    /* ========== EXPLORAÇÃO HORIZONTAL ========== */
+    .scroll-horizontal {
+      display: flex;
+      gap: 18px;
+      overflow-x: auto;
+      padding: 8px 0 24px;
+      scroll-snap-type: x mandatory;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: thin;
+    }
+
+    .scroll-horizontal::-webkit-scrollbar {
+      height: 6px
+    }
+
+    .scroll-horizontal::-webkit-scrollbar-thumb {
+      background: var(--border);
+      border-radius: 10px
+    }
+
+    .vibe-card {
+      flex: 0 0 280px;
+      scroll-snap-align: start;
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-1);
+      cursor: pointer;
+      transition: transform .2s, box-shadow .2s;
+    }
+
+    .vibe-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-2)
+    }
+
+    .vibe-card img {
+      width: 100%;
+      height: 200px;
+      object-fit: cover
+    }
+
+    .vibe-card .vibe-body {
+      padding: 14px 16px
+    }
+
+    .vibe-card h4 {
+      font-family: var(--font-display);
+      font-size: 18px;
+      margin: 0
+    }
+
+    .vibe-card .vibe-meta {
+      font-size: 13px;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      margin-top: 4px
+    }
+
+    .vibe-card .vibe-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 10px
+    }
+
+    .vibe-card .price {
+      font-weight: 700;
+      font-size: 16px
+    }
+
+    .vibe-card .price small {
+      color: var(--text-muted);
+      font-weight: 500
+    }
+
+    .rating {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      color: var(--accent);
+      font-weight: 600;
+      font-size: 14px
+    }
+
+    .rating .icon {
+      font-size: 18px;
+      color: var(--accent)
+    }
+
+    .fav-heart {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, .92);
+      color: #444;
+      display: grid;
+      place-items: center;
+      box-shadow: var(--shadow-1);
+      transition: transform .2s;
+    }
+
+    .fav-heart:hover {
+      transform: scale(1.08)
+    }
+
+    .fav-heart.is-fav {
+      color: var(--danger)
+    }
+
+    .fav-heart.is-fav .icon {
+      font-variation-settings: 'FILL' 1;
+      animation: pop .35s ease
+    }
+
+    @keyframes pop {
+      0% {
+        transform: scale(.6)
+      }
+
+      60% {
+        transform: scale(1.2)
+      }
+
+      100% {
+        transform: scale(1)
+      }
+    }
+
+    .empty {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--text-muted);
+      border: 1px dashed var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+    }
+
+    .empty .icon {
+      font-size: 48px;
+      color: var(--text-muted);
+      margin-bottom: 10px
+    }
+
+    /* ========== DETAILS (imersivo) ========== */
+    .hero-detail {
+      position: relative;
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      margin-bottom: 24px;
+      height: 60vh;
+      min-height: 360px;
+      background-size: cover;
+      background-position: center;
+    }
+
+    .hero-detail .hero-text {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 40px 24px 24px;
+      background: linear-gradient(transparent, rgba(0, 0, 0, .7));
+      color: white;
+    }
+
+    .hero-detail h1 {
+      font-size: clamp(28px, 6vw, 48px);
+      margin: 0;
+      text-shadow: 0 2px 8px rgba(0, 0, 0, .5)
+    }
+
+    .hero-detail .hero-meta {
+      font-size: 16px;
+      opacity: .9;
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap
+    }
+
+    .detail-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 24px
+    }
+
+    @media(min-width:980px) {
+      .detail-grid {
+        grid-template-columns: 1.6fr 1fr
+      }
+    }
+
+    .info-block {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+    }
+
+    .info-block h2 {
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 20px;
+      margin: 0 0 10px;
+      letter-spacing: -.01em
+    }
+
+    .amenities {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px
+    }
+
+    .amenities span {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      background: var(--surface-2);
+      border-radius: 999px;
+      font-size: 14px;
+      color: var(--text-soft)
+    }
+
+    #mapEl {
+      height: 280px;
+      border-radius: var(--radius);
+      overflow: hidden;
+      border: 1px solid var(--border)
+    }
+
+    /* booking box */
+    .booking {
+      position: sticky;
+      top: 88px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      box-shadow: var(--shadow-1);
+    }
+
+    .booking .price-big {
+      font-family: var(--font-display);
+      font-size: 28px;
+      font-weight: 800;
+      letter-spacing: -.01em
+    }
+
+    .booking .price-big small {
+      font-family: var(--font-ui);
+      font-size: 14px;
+      color: var(--text-muted);
+      font-weight: 500
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-top: 12px
+    }
+
+    .field label {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-soft)
+    }
+
+    .field input,
+    .field select,
+    .field textarea {
+      padding: 12px 14px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: var(--surface);
+      min-height: 48px;
+    }
+
+    .field textarea {
+      min-height: 90px;
+      resize: vertical
+    }
+
+    .dates-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px
+    }
+
+    .summary {
+      margin-top: 14px;
+      padding-top: 14px;
+      border-top: 1px dashed var(--border);
+      display: flex;
+      justify-content: space-between;
+      font-weight: 700
+    }
+
+    /* reviews */
+    .review {
+      padding: 14px 0;
+      border-top: 1px solid var(--border)
+    }
+
+    .review:first-of-type {
+      border-top: 0
+    }
+
+    .review .who {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 6px
+    }
+
+    .avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: var(--brand-soft);
+      color: var(--brand-strong);
+      display: grid;
+      place-items: center;
+      font-weight: 700
+    }
+
+    /* ========== AUTH ========== */
+    .auth {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 1fr;
+      background: var(--bg);
+    }
+
+    @media(min-width:900px) {
+      .auth {
+        grid-template-columns: 1.05fr 1fr
+      }
+    }
+
+    .auth .visual {
+      position: relative;
+      display: none;
+      color: #fff;
+      background: linear-gradient(180deg, rgba(0, 0, 0, .15), rgba(0, 0, 0, .55)), url('https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=1600&q=70') center/cover;
+      padding: 32px;
+    }
+
+    @media(min-width:900px) {
+      .auth .visual {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between
+      }
+    }
+
+    .auth .visual .top {
+      font-family: var(--font-display);
+      font-weight: 800;
+      font-size: 24px
+    }
+
+    .auth .visual blockquote {
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 30px;
+      line-height: 1.2;
+      margin: 0;
+      max-width: 520px;
+      letter-spacing: -.01em
+    }
+
+    .auth .visual cite {
+      display: block;
+      margin-top: 14px;
+      font-style: normal;
+      font-weight: 600;
+      font-size: 14px;
+      opacity: .9
+    }
+
+    .auth .form-wrap {
+      display: grid;
+      place-items: center;
+      padding: 32px
+    }
+
+    .auth .form {
+      width: 100%;
+      max-width: 420px
+    }
+
+    .auth h1 {
+      font-family: var(--font-display);
+      font-weight: 800;
+      font-size: 34px;
+      margin: 0 0 6px;
+      letter-spacing: -.02em
+    }
+
+    .auth h1 .accent {
+      color: var(--accent)
+    }
+
+    .auth p.lead {
+      color: var(--text-muted);
+      margin: 0 0 22px
+    }
+
+    .auth .switcher {
+      display: flex;
+      gap: 6px;
+      background: var(--surface-2);
+      padding: 4px;
+      border-radius: 999px;
+      margin-bottom: 18px;
+      border: 1px solid var(--border)
+    }
+
+    .auth .switcher button {
+      flex: 1;
+      padding: 10px;
+      border-radius: 999px;
+      font-weight: 600;
+      color: var(--text-soft)
+    }
+
+    .auth .switcher button.active {
+      background: var(--surface);
+      color: var(--brand-strong);
+      box-shadow: var(--shadow-1)
+    }
+
+    /* ========== TOASTS ========== */
+    .toast-wrap {
+      position: fixed;
+      top: 18px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 1000;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      align-items: center;
+      pointer-events: none;
+      width: min(92vw, 440px);
+    }
+
+    .toast {
+      pointer-events: auto;
+      background: var(--surface);
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-left: 5px solid var(--brand);
+      border-radius: 14px;
+      padding: 12px 14px;
+      box-shadow: var(--shadow-2);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      width: 100%;
+      animation: toastIn .35s cubic-bezier(.2, .8, .2, 1);
+    }
+
+    .toast.success {
+      border-left-color: var(--ok)
+    }
+
+    .toast.success .icon {
+      color: var(--ok)
+    }
+
+    .toast.error {
+      border-left-color: var(--danger)
+    }
+
+    .toast.error .icon {
+      color: var(--danger)
+    }
+
+    .toast.warn {
+      border-left-color: var(--warn)
+    }
+
+    .toast.warn .icon {
+      color: var(--warn)
+    }
+
+    .toast.info .icon {
+      color: var(--brand)
+    }
+
+    .toast .icon {
+      font-size: 24px
+    }
+
+    .toast strong {
+      display: block;
+      font-size: 14px
+    }
+
+    .toast span {
+      font-size: 13px;
+      color: var(--text-muted)
+    }
+
+    .toast.out {
+      animation: toastOut .35s ease forwards
+    }
+
+    @keyframes toastIn {
+      from {
+        opacity: 0;
+        transform: translateY(-14px) scale(.96)
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1)
+      }
+    }
+
+    @keyframes toastOut {
+      to {
+        opacity: 0;
+        transform: translateY(-14px) scale(.96)
+      }
+    }
+
+    /* ========== MODAL ========== */
+    .overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(10, 15, 10, .55);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 900;
+      padding: 18px;
+      backdrop-filter: blur(2px);
+    }
+
+    .overlay.open {
+      display: flex;
+      animation: fade .2s ease
+    }
+
+    @keyframes fade {
+      from {
+        opacity: 0
+      }
+
+      to {
+        opacity: 1
+      }
+    }
+
+    .modal {
+      background: var(--surface);
+      border-radius: var(--radius-lg);
+      width: 100%;
+      max-width: 460px;
+      padding: 26px;
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-3);
+      animation: popIn .25s cubic-bezier(.2, .8, .2, 1);
+    }
+
+    @keyframes popIn {
+      from {
+        opacity: 0;
+        transform: scale(.94) translateY(8px)
+      }
+
+      to {
+        opacity: 1;
+        transform: scale(1) translateY(0)
+      }
+    }
+
+    .modal h3 {
+      font-family: var(--font-display);
+      font-weight: 800;
+      font-size: 22px;
+      margin: 0 0 6px;
+      letter-spacing: -.01em
+    }
+
+    .modal p {
+      margin: 0 0 18px;
+      color: var(--text-muted)
+    }
+
+    .modal .actions {
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+      flex-wrap: wrap
+    }
+
+    /* ========== HOST PANEL ========== */
+    .panel-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 14px 0 22px
+    }
+
+    .panel-tabs button {
+      padding: 10px 16px;
+      min-height: 44px;
+      border-radius: 999px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      font-weight: 600;
+      color: var(--text-soft);
+    }
+
+    .panel-tabs button.active {
+      background: var(--brand);
+      color: #fff;
+      border-color: transparent
+    }
+
+    .prop-row {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 16px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px;
+      margin-bottom: 16px
+    }
+
+    @media(min-width:900px) {
+      .prop-row {
+        grid-template-columns: 1.1fr 1fr
+      }
+    }
+
+    .prop-row h4 {
+      font-family: var(--font-display);
+      margin: 0 0 4px;
+      font-size: 18px
+    }
+
+    .mini-cal {
+      min-height: 340px
+    }
+
+    .fc {
+      font-family: var(--font-ui);
+      font-size: 13px
+    }
+
+    .fc .fc-toolbar-title {
+      font-family: var(--font-display);
+      font-size: 16px;
+      font-weight: 700
+    }
+
+    .fc .fc-button {
+      background: var(--surface-2) !important;
+      color: var(--text) !important;
+      border: 1px solid var(--border) !important;
+      text-transform: none;
+      font-weight: 600;
+      border-radius: 10px !important;
+      padding: 6px 10px !important;
+      box-shadow: none !important
+    }
+
+    .fc .fc-button-primary:not(:disabled).fc-button-active {
+      background: var(--brand) !important;
+      color: #fff !important;
+      border-color: transparent !important
+    }
+
+    .fc .fc-daygrid-day.fc-day-today {
+      background: var(--brand-soft) !important
+    }
+
+    .fc-event {
+      background: var(--accent) !important;
+      border: none !important;
+      color: #fff !important;
+      padding: 2px 6px;
+      border-radius: 6px
+    }
+
+    .reservation-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 12px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      margin-bottom: 8px;
+      background: var(--surface)
+    }
+
+    .reservation-row .who {
+      display: flex;
+      align-items: center;
+      gap: 10px
+    }
+
+    /* ========== UTIL ========== */
+    .hidden {
+      display: none !important
+    }
+
+    .spacer {
+      height: 60px
+    }
+
+    .row-between {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap
+    }
+
+    .muted {
+      color: var(--text-muted)
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 10px;
+      border-radius: 999px;
+      background: var(--brand-soft);
+      color: var(--brand-strong);
+      font-size: 12px;
+      font-weight: 700
+    }
+
+    /* ========== LAYOUT (footer fixo) ========== */
+    #app {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    #app main {
+      flex: 1;
+    }
+
+    footer {
+      padding: 30px 0;
+      border-top: 1px solid var(--border);
+      color: var(--text-muted);
+      font-size: 14px;
+      text-align: center;
+    }
+
+    /* tablets / médio: search-pill quebra para a segunda linha */
+    @media(max-width:1080px) {
+      .appbar .row {
+        flex-wrap: wrap;
+        height: auto;
+        padding: 12px 0;
+        gap: 10px
+      }
+
+      .search-pill {
+        order: 3;
+        width: 100%;
+        min-height: 54px
+      }
+
+      .brand {
+        margin-right: auto
+      }
+    }
+
+    /* mobile */
+    @media(max-width:720px) {
+      .search-pill input {
+        font-size: 15px
+      }
+
+      .brand {
+        font-size: 20px
+      }
+
+      .brand .mark {
+        width: 32px;
+        height: 32px
+      }
+
+      .appbar .right .btn span:not(.icon) {
+        display: none
+      }
+
+      .appbar .right .btn {
+        padding: 0;
+        width: var(--tap);
+        justify-content: center
+      }
+
+      .booking {
+        position: static
+      }
+
+      .hero-detail {
+        height: 50vh;
+        min-height: 280px
+      }
+
+      .hero-detail h1 {
+        font-size: 24px
+      }
+
+      .page-head h1 {
+        font-size: 24px
+      }
+
+      .container {
+        padding: 0 14px
+      }
+    }
+
+    /* very small: empilha campos verticalmente */
+    @media(max-width:520px) {
+      .appbar .row {
+        flex-direction: column;
+        align-items: stretch
+      }
+
+      .appbar .row>.brand {
+        align-self: flex-start
+      }
+
+      .appbar .right {
+        justify-content: flex-end
+      }
+
+      .search-pill {
+        flex-wrap: wrap;
+        width: 100%;
+        max-width: none;
+        border-radius: 18px;
+        padding: 10px;
+        gap: 6px
+      }
+
+      .search-pill input {
+        flex: 1 1 100%
+      }
+
+      .search-pill .go {
+        flex: 0 0 auto;
+        width: 100%;
+        border-radius: 12px;
+        height: 48px;
+        margin-top: 4px
+      }
+
+      .search-pill .go::after {
+        content: 'Buscar';
+        margin-left: 8px;
+        font-weight: 600
+      }
+    }
+
+    html,
+    body {
+      overflow-x: hidden
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- ============ TOASTS ============ -->
+  <div class="toast-wrap" id="toastWrap" aria-live="polite" aria-atomic="true"></div>
+
+  <!-- ============ MODAL ============ -->
+  <div class="overlay" id="overlay" role="dialog" aria-modal="true">
+    <div class="modal" id="modal"></div>
+  </div>
+
+  <!-- ============ AUTH SCREEN ============ -->
+  <section id="screen-auth" class="auth">
+    <aside class="visual">
+      <div class="top">
+        <span class="brand" style="color:#fff">
+          <span class="mark"><span class="icon">cottage</span></span>
+          JEM
+        </span>
+      </div>
+      <div>
+        <blockquote>"Achei a chácara ideal para mim e minha família, sem complicação."</blockquote>
+        <cite>— Carlos Mendes, hóspede</cite>
+      </div>
+    </aside>
+    <div class="form-wrap">
+      <div class="form">
+        <h1>Bem-vindo ao <span class="accent">JEM</span></h1>
+        <p class="lead">Procure, reserve e avalie a chácara ideal para datas especiais — do seu jeito.</p>
+
+        <div class="switcher" role="tablist">
+          <button id="tabLogin" class="active" onclick="switchAuth('login')">Entrar</button>
+          <button id="tabSignup" onclick="switchAuth('signup')">Criar conta</button>
+        </div>
+
+        <form id="formLogin" onsubmit="onLogin(event)">
+          <div class="field">
+            <label for="loginUser">Nome de usuário</label>
+            <input id="loginUser" type="text" autocomplete="username" required />
+          </div>
+          <div class="field">
+            <label for="loginPass">Senha</label>
+            <input id="loginPass" type="password" autocomplete="current-password" required />
+          </div>
+          <div style="margin-top:18px"><button class="btn lg block" type="submit"><span class="icon">login</span>
+              Entrar</button></div>
+          <p class="muted" style="text-align:center;margin-top:14px;font-size:14px">Dica: experimente <strong>admin /
+              admin</strong></p>
+        </form>
+
+        <form id="formSignup" class="hidden" onsubmit="onSignup(event)">
+          <div class="field">
+            <label for="signName">Seu nome completo</label>
+            <input id="signName" type="text" required />
+          </div>
+          <div class="field">
+            <label for="signUser">Nome de usuário</label>
+            <input id="signUser" type="text" required />
+          </div>
+          <div class="field">
+            <label for="signPass">Crie uma senha (mín. 3 caracteres)</label>
+            <input id="signPass" type="password" minlength="3" required />
+          </div>
+          <div style="margin-top:18px"><button class="btn lg block accent" type="submit"><span
+                class="icon">person_add</span> Criar minha conta</button></div>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ APP ============ -->
+  <div id="app" class="hidden">
+    <header class="appbar">
+      <div class="container row">
+        <a class="brand" href="#" onclick="goto('home');return false" aria-label="JEM - início">
+          <span class="mark"><span class="icon">cottage</span></span>
+          JEM
+        </a>
+
+        <div class="search-pill" role="search" aria-label="Buscar chácaras">
+          <span class="icon sm" style="color:var(--text-muted)">search</span>
+          <input type="search" id="mainSearch" placeholder="Ex: pescaria em Araçatuba" oninput="buscaConversacional()"
+            autocomplete="off" />
+          <button class="go" onclick="renderHome()" aria-label="Buscar"><span class="icon">search</span></button>
+        </div>
+
+        <div class="right">
+          <button class="icon-btn" id="themeBtn" title="Alternar tema" onclick="toggleTheme()"
+            aria-label="Alternar tema"><span class="icon" id="themeIcon">dark_mode</span></button>
+          <button class="btn ghost" onclick="goto('host')" title="Painel"><span class="icon">dashboard</span><span>Meu
+              painel</span></button>
+          <button class="icon-btn" onclick="logout()" title="Sair" aria-label="Sair"><span
+              class="icon">logout</span></button>
+        </div>
+      </div>
+    </header>
+
+    <main class="container">
+
+      <!-- ========== HOME ========== -->
+      <section id="screen-home">
+        <div class="page-head">
+          <h1>Olá, <span class="accent" id="greetUser">visitante</span> — encontre seu lugar.</h1>
+          <p>Chácaras, ranchos e áreas de lazer verificadas. Sem complicação, sem surpresas.</p>
+        </div>
+
+        <div class="filterbar" style="display:flex;align-items:center;gap:14px;margin-bottom:20px;flex-wrap:wrap">
+          <div class="tabs" role="tablist">
+            <button class="active" onclick="switchHomeTab('all', this)"><span
+                class="icon sm">explore</span>Explorar</button>
+            <button onclick="switchHomeTab('fav', this)"><span class="icon sm">favorite</span>Favoritos</button>
+          </div>
+        </div>
+
+        <div id="homeSections"></div>
+      </section>
+
+      <!-- ========== DETAIL ========== -->
+      <section id="screen-detail" class="hidden">
+        <div class="detail-head">
+          <button class="btn ghost" onclick="goto('home')"><span
+              class="icon">arrow_back</span><span>Voltar</span></button>
+          <h1 id="dTitle"></h1>
+          <button id="dFav" class="btn ghost" onclick="toggleFav(currentRanch.id, this, true)">
+            <span class="icon" id="dFavIcon">favorite</span><span id="dFavLabel">Favoritar</span>
+          </button>
+        </div>
+
+        <div class="hero-detail" id="heroDetail"
+          style="background-image:url('https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=1600&q=70')">
+          <div class="hero-text">
+            <h1 id="heroTitle"></h1>
+            <div class="hero-meta" id="heroMeta"></div>
+          </div>
+        </div>
+
+        <div class="detail-grid">
+          <div>
+            <div class="info-block">
+              <h2 id="dSubtitle"></h2>
+              <p id="dDesc" class="muted"></p>
+
+              <h2 style="margin-top:18px">Comodidades</h2>
+              <div class="amenities" id="dAmenities"></div>
+
+              <h2 style="margin-top:18px">Regras da casa</h2>
+              <p id="dRules" class="muted"></p>
+
+              <h2 style="margin-top:18px">Onde fica</h2>
+              <div id="mapEl"></div>
+            </div>
+
+            <div class="info-block" style="margin-top:20px">
+              <div class="row-between">
+                <h2 style="margin:0">Avaliações</h2>
+                <span class="rating"><span class="icon">star</span><span id="dAvgRating">—</span><span class="muted"
+                    style="font-weight:500">(<span id="dRatingCount">0</span>)</span></span>
+              </div>
+              <div id="dReviews"></div>
+              <div id="dReviewForm" class="hidden"
+                style="margin-top:14px;border-top:1px dashed var(--border);padding-top:14px">
+                <h2>Deixe sua avaliação</h2>
+                <div class="field">
+                  <label for="rvNota">Sua nota</label>
+                  <select id="rvNota">
+                    <option value="5">5 — Incrível</option>
+                    <option value="4">4 — Muito bom</option>
+                    <option value="3">3 — Bom</option>
+                    <option value="2">2 — Regular</option>
+                    <option value="1">1 — Ruim</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label for="rvTexto">Conte como foi sua experiência</label>
+                  <textarea id="rvTexto" placeholder="O que mais gostou? O que pode melhorar?"></textarea>
+                </div>
+                <button class="btn" onclick="enviarAvaliacao()"><span class="icon">send</span> Enviar avaliação</button>
+              </div>
+            </div>
+          </div>
+
+          <aside>
+            <div class="booking">
+              <div class="price-big"><span id="dPrice"></span> <small>/ diária</small></div>
+              <div class="muted" style="margin-top:4px"><span class="icon sm">groups</span> Acomoda até <span
+                  id="dCap"></span> pessoas</div>
+
+              <div class="dates-2">
+                <div class="field"><label for="dCheckin">Check-in</label><input type="date" id="dCheckin"
+                    onchange="atualizarTotal()" /></div>
+                <div class="field"><label for="dCheckout">Check-out</label><input type="date" id="dCheckout"
+                    onchange="atualizarTotal()" /></div>
+              </div>
+              <div class="field">
+                <label for="dHospedes">Hóspedes</label>
+                <select id="dHospedes" onchange="atualizarTotal()"></select>
+              </div>
+
+              <div class="summary"><span>Total</span><span id="dTotal">R$ 0,00</span></div>
+
+              <div style="margin-top:14px"><button class="btn lg block" onclick="reservar()"><span
+                    class="icon">event_available</span> Reservar</button></div>
+              <p class="muted" style="font-size:12px;margin-top:10px;text-align:center"><span
+                  class="icon sm">shield</span> Você só confirma a reserva — nada é cobrado agora.</p>
+            </div>
+          </aside>
+        </div>
+        <div class="spacer"></div>
+      </section>
+
+      <!-- ========== HOST PANEL ========== -->
+      <section id="screen-host" class="hidden">
+        <div class="page-head">
+          <h1>Meu <span class="accent">painel</span></h1>
+          <p>Gerencie suas reservas, propriedades e veja como sua ocupação evolui.</p>
+        </div>
+
+        <div class="panel-tabs">
+          <button class="active" onclick="switchHostTab('mybookings', this)"><span class="icon sm">luggage</span> Minhas
+            reservas</button>
+          <button onclick="switchHostTab('myprops', this)"><span class="icon sm">villa</span> Minhas
+            propriedades</button>
+          <button onclick="switchHostTab('newprop', this)"><span class="icon sm">add_home</span> Cadastrar
+            propriedade</button>
+          <button onclick="switchHostTab('dash', this)"><span class="icon sm">monitoring</span> Visão geral</button>
+        </div>
+
+        <div id="host-mybookings"></div>
+        <div id="host-myprops" class="hidden"></div>
+
+        <div id="host-newprop" class="hidden">
+          <div class="info-block" style="max-width:720px">
+            <h2>Cadastre uma nova propriedade</h2>
+            <p class="muted">Preencha as informações básicas. Você pode editar depois.</p>
+            <form onsubmit="cadastrarRancho(event)">
+              <div class="field"><label>Nome da propriedade</label><input id="npNome" required
+                  placeholder="Ex: Sítio Recanto Verde" /></div>
+              <div class="dates-2">
+                <div class="field"><label>Cidade / Estado</label><input id="npCidade" required
+                    placeholder="Ex: Araçatuba - SP" /></div>
+                <div class="field"><label>Capacidade (pessoas)</label><input id="npCap" type="number" min="1" max="200"
+                    required value="8" /></div>
+              </div>
+              <div class="dates-2">
+                <div class="field"><label>Preço por diária (R$)</label><input id="npPreco" type="number" min="0"
+                    step="10" required value="450" /></div>
+                <div class="field"><label>URL da foto principal</label><input id="npFoto" placeholder="https://..." />
+                </div>
+              </div>
+              <div class="field"><label>Descrição</label><textarea id="npDesc"
+                  placeholder="Descreva o espaço, ambientes, diferenciais..."></textarea></div>
+              <div class="field"><label>Regras da casa</label><textarea id="npRegras"
+                  placeholder="Ex: não é permitido som alto após 22h..."></textarea></div>
+              <div style="margin-top:8px"><button class="btn lg" type="submit"><span class="icon">save</span> Publicar
+                  propriedade</button></div>
+            </form>
+          </div>
+        </div>
+
+        <div id="host-dash" class="hidden">
+          <div class="info-block">
+            <h2>Reservas dos últimos 6 meses</h2>
+            <p class="muted">Total de reservas recebidas em todas as suas propriedades.</p>
+            <canvas id="dashChart" height="120"></canvas>
+          </div>
+          <div class="info-block" style="margin-top:20px">
+            <h2>💡 Dicas para seu anúncio</h2>
+            <ul style="color:var(--text-soft)">
+              <li>Adicione fotos reais do café da manhã — propriedades com essa imagem têm mais reservas.</li>
+              <li>Mantenha o calendário sempre atualizado para evitar conflitos e ganhar confiança com os clientes.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="spacer"></div>
+      </section>
+    </main>
+
+    <footer>
+      <div class="container">
+        JEM &middot; Encontre sua próxima pausa. © <span id="yr"></span>
+      </div>
+    </footer>
+  </div>
+
+  <script>
+    /* =========================================================
+       JEM — Lógica do protótipo (com vibes e busca conversacional)
+       ========================================================= */
+    const LS = {
+      USERS: 'ra_usuarios', CUR: 'ra_usuarioAtual', RANCHES: 'ra_ranchos',
+      RESERV: 'ra_reservas', FAV: 'ra_favoritos', THEME: 'ra_tema', FIRST: 'ra_primeiroAcesso'
+    };
+
+    const $ = (s, c = document) => c.querySelector(s);
+    const $$ = (s, c = document) => [...c.querySelectorAll(s)];
+    const fmtBRL = n => 'R$ ' + (Number(n) || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    const uid = () => Math.random().toString(36).slice(2, 9);
+    const todayISO = () => new Date().toISOString().slice(0, 10);
+    const addDaysISO = (d, n) => { const x = new Date(d); x.setDate(x.getDate() + n); return x.toISOString().slice(0, 10); };
+    const diffDays = (a, b) => Math.max(0, Math.round((new Date(b) - new Date(a)) / 86400000));
+    const get = (k, fb) => { try { return JSON.parse(localStorage.getItem(k)) ?? fb; } catch { return fb; } };
+    const set = (k, v) => localStorage.setItem(k, JSON.stringify(v));
+
+    /* ---------- toasts ---------- */
+    function toast(msg, type = 'info', title = '') {
+      const wrap = $('#toastWrap');
+      const el = document.createElement('div');
+      el.className = `toast ${type}`;
+      const icons = { success: 'check_circle', error: 'error', warn: 'warning', info: 'info' };
+      el.innerHTML = `<span class="icon">${icons[type] || 'info'}</span><div><strong>${title || ({ success: 'Sucesso', error: 'Algo deu errado', warn: 'Atenção', info: 'Aviso' }[type])}</strong><span>${msg}</span></div>`;
+      wrap.appendChild(el);
+      setTimeout(() => { el.classList.add('out'); setTimeout(() => el.remove(), 350); }, 3000);
+    }
+
+    /* ---------- modal ---------- */
+    function openModal({ title, message, confirmText = 'Confirmar', cancelText = 'Cancelar', danger = false, onConfirm }) {
+      const ov = $('#overlay'); const m = $('#modal');
+      m.innerHTML = `<h3>${title}</h3><p>${message}</p>
+    <div class="actions">
+      <button class="btn ghost" id="mCancel">${cancelText}</button>
+      <button class="btn ${danger ? 'danger' : ''}" id="mOk">${confirmText}</button>
+    </div>`;
+      ov.classList.add('open');
+      const close = () => ov.classList.remove('open');
+      $('#mCancel').onclick = close;
+      $('#mOk').onclick = () => { close(); onConfirm && onConfirm(); };
+      ov.onclick = e => { if (e.target === ov) close(); };
+    }
+
+    function infoModal({ title, body, ok = 'Entendi', onOk }) {
+      const ov = $('#overlay'); const m = $('#modal');
+      m.innerHTML = `<h3>${title}</h3><div style="margin-bottom:18px;color:var(--text-muted)">${body}</div>
+    <div class="actions"><button class="btn" id="mOk">${ok}</button></div>`;
+      ov.classList.add('open');
+      const close = () => ov.classList.remove('open');
+      $('#mOk').onclick = () => { close(); onOk && onOk(); };
+      ov.onclick = e => { if (e.target === ov) close(); };
+    }
+
+    /* ---------- theme ---------- */
+    function applyTheme(t) {
+      document.documentElement.setAttribute('data-theme', t);
+      const ic = $('#themeIcon'); if (ic) ic.textContent = t === 'dark' ? 'light_mode' : 'dark_mode';
+      set(LS.THEME, t);
+    }
+    function toggleTheme() {
+      const cur = localStorage.getItem(LS.THEME) ? JSON.parse(localStorage.getItem(LS.THEME)) : 'light';
+      applyTheme(cur === 'dark' ? 'light' : 'dark');
+    }
+
+    /* ---------- seed ---------- */
+    function seed() {
+      if (!get(LS.USERS, null)) {
+        set(LS.USERS, [{ nome: 'Administrador JEM', usuario: 'admin', senha: 'admin' }]);
+      }
+      if (!get(LS.RANCHES, null)) {
+        set(LS.RANCHES, [
+          {
+            id: uid(), nome: 'Chácara Vento d\'Água', cidade: 'Araçatuba - SP', capacidade: 15, preco: 850, descricao: 'Espaço aconchegante com piscina aquecida, área gourmet e vista para o pôr do sol. Ideal para famílias e pequenos eventos.', regras: 'Não é permitido som alto após 22h. Animais permitidos com aviso prévio. Check-in a partir das 14h.',
+            fotos: ['https://images.unsplash.com/photo-1568605114967-8130f3a36994?auto=format&fit=crop&w=1400&q=70', 'https://images.unsplash.com/photo-1542718610-a1d656d1884c?auto=format&fit=crop&w=1400&q=70', 'https://images.unsplash.com/photo-1505691938895-1758d7feb511?auto=format&fit=crop&w=1400&q=70'],
+            lat: -21.2089, lng: -50.4328, vibes: ['piscina', 'familia', 'festas'],
+            avaliacoes: [{ nota: 5, texto: 'Lugar incrível, voltaremos com certeza!', usuario: 'admin' }, { nota: 5, texto: 'Anfitrião super atencioso.', usuario: 'admin' }],
+            anfitriao: 'admin'
+          },
+          {
+            id: uid(), nome: 'Rancho Beira-Rio', cidade: 'Birigui - SP', capacidade: 8, preco: 520, descricao: 'Rancho rústico às margens do rio, perfeito para descansar e pescar. Lareira na sala e churrasqueira coberta.', regras: 'Pesca permitida apenas nos horários sinalizados. Não fumar dentro da casa.',
+            fotos: ['https://images.unsplash.com/photo-1518780664697-55e3ad937233?auto=format&fit=crop&w=1400&q=70', 'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&w=1400&q=70'],
+            lat: -21.2885, lng: -50.3406, vibes: ['pescaria', 'romantico'],
+            avaliacoes: [{ nota: 4, texto: 'Tranquilidade absoluta. Recomendo.', usuario: 'admin' }],
+            anfitriao: 'admin'
+          },
+          {
+            id: uid(), nome: 'Sítio Pôr do Sol', cidade: 'Bilac - SP', capacidade: 4, preco: 340, descricao: 'Cantinho perfeito para casais ou famílias pequenas. Horta orgânica, café da manhã caseiro e silêncio absoluto.', regras: 'Limite de 4 pessoas. Não realizamos eventos.',
+            fotos: ['https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=1400&q=70', 'https://images.unsplash.com/photo-1501183638710-841dd1904471?auto=format&fit=crop&w=1400&q=70', 'https://images.unsplash.com/photo-1499793983690-e29da59ef1c2?auto=format&fit=crop&w=1400&q=70'],
+            lat: -21.4017, lng: -50.4731, vibes: ['romantico', 'familia'],
+            avaliacoes: [{ nota: 5, texto: 'Café da manhã sensacional!', usuario: 'admin' }],
+            anfitriao: 'admin'
+          },
+          {
+            id: uid(), nome: 'Sítio Boa Vista', cidade: 'São José do Rio Preto - SP', capacidade: 10, preco: 620, descricao: 'Chácara ampla com pomar, açude para pesca esportiva e quiosque. Ideal para grupos de amigos e pescadores.', regras: 'Pesca esportiva apenas com anzol simples. Churrasqueira disponível. Não aceita animais de grande porte.',
+            fotos: ['https://images.unsplash.com/photo-1598902108854-10e335adac99?auto=format&fit=crop&w=1400&q=70', 'https://images.unsplash.com/photo-1505691938895-1758d7feb511?auto=format&fit=crop&w=1400&q=70'],
+            lat: -20.8117, lng: -49.3762, vibes: ['pescaria', 'festas'],
+            avaliacoes: [{ nota: 4, texto: 'Ótimo pomar, voltaremos na época de colheita!', usuario: 'admin' }],
+            anfitriao: 'admin'
+          },
+          {
+            id: uid(), nome: 'Rancho Estrela D\'Alva', cidade: 'São Carlos - SP', capacidade: 6, preco: 490, descricao: 'Rancho com vista panorâmica para montanhas, ideal para casais e famílias tranquilas. Lareira e trilha ecológica.', regras: 'Proibido som alto. Animais de pequeno porte permitidos. Check-in 15h.',
+            fotos: ['https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=1400&q=70', 'https://images.unsplash.com/photo-1449844908441-8829872d2607?auto=format&fit=crop&w=1400&q=70'],
+            lat: -22.0175, lng: -47.8907, vibes: ['romantico', 'familia'],
+            avaliacoes: [],
+            anfitriao: 'admin'
+          },
+          {
+            id: uid(), nome: 'Chácara Mata Verde', cidade: 'Sorocaba - SP', capacidade: 12, preco: 720, descricao: 'Ampla chácara com mata preservada, piscina natural, campo de futebol e área para eventos familiares.', regras: 'Eventos devem ser comunicados com antecedência. Respeitar o silêncio da mata.',
+            fotos: ['https://images.unsplash.com/photo-1580587771525-78b9dba3b914?auto=format&fit=crop&w=1400&q=70', 'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&w=1400&q=70'],
+            lat: -23.5035, lng: -47.4500, vibes: ['piscina', 'festas', 'familia'],
+            avaliacoes: [{ nota: 5, texto: 'Espaço perfeito para o aniversário da minha filha!', usuario: 'admin' }],
+            anfitriao: 'admin'
+          }
+        ]);
+      }
+      if (!get(LS.RESERV, null)) set(LS.RESERV, []);
+      if (!get(LS.FAV, null)) set(LS.FAV, {});
+      if (!localStorage.getItem(LS.THEME)) applyTheme('light'); else applyTheme(JSON.parse(localStorage.getItem(LS.THEME)));
+      if (localStorage.getItem(LS.FIRST) === null) set(LS.FIRST, true);
+    }
+
+    /* ---------- auth ---------- */
+    function switchAuth(which) {
+      $('#tabLogin').classList.toggle('active', which === 'login');
+      $('#tabSignup').classList.toggle('active', which === 'signup');
+      $('#formLogin').classList.toggle('hidden', which !== 'login');
+      $('#formSignup').classList.toggle('hidden', which !== 'signup');
+    }
+    function onLogin(e) {
+      e.preventDefault();
+      const u = $('#loginUser').value.trim();
+      const p = $('#loginPass').value;
+      const user = get(LS.USERS, []).find(x => x.usuario === u && x.senha === p);
+      if (!user) { toast('Usuário ou senha incorretos.', 'error'); return; }
+      set(LS.CUR, user);
+      startApp();
+    }
+    function onSignup(e) {
+      e.preventDefault();
+      const nome = $('#signName').value.trim();
+      const usuario = $('#signUser').value.trim();
+      const senha = $('#signPass').value;
+      if (senha.length < 3) { toast('A senha precisa ter pelo menos 3 caracteres.', 'warn'); return; }
+      const users = get(LS.USERS, []);
+      if (users.some(u => u.usuario === usuario)) { toast('Esse nome de usuário já está em uso.', 'warn'); return; }
+      users.push({ nome, usuario, senha });
+      set(LS.USERS, users);
+      set(LS.CUR, { nome, usuario, senha });
+      toast('Conta criada. Bem-vindo ao JEM!', 'success');
+      startApp();
+    }
+    function logout() {
+      openModal({
+        title: 'Sair da conta?', message: 'Você poderá entrar novamente a qualquer momento.', confirmText: 'Sair', danger: true,
+        onConfirm: () => { localStorage.removeItem(LS.CUR); $('#app').classList.add('hidden'); $('#screen-auth').classList.remove('hidden'); }
+      });
+    }
+
+    /* ---------- start ---------- */
+    function startApp() {
+      const u = get(LS.CUR, null);
+      if (!u) { $('#app').classList.add('hidden'); $('#screen-auth').classList.remove('hidden'); return; }
+      $('#screen-auth').classList.add('hidden');
+      $('#app').classList.remove('hidden');
+      $('#greetUser').textContent = u.nome.split(' ')[0];
+      $('#yr').textContent = new Date().getFullYear();
+      goto('home');
+      if (get(LS.FIRST, true)) { setTimeout(startTour, 600); }
+    }
+
+    /* ---------- navigation ---------- */
+    function goto(screen) {
+      ['home', 'detail', 'host'].forEach(s => {
+        $('#screen-' + s).classList.toggle('hidden', s !== screen);
+      });
+      if (screen === 'home') renderHome();
+      if (screen === 'host') renderHost();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    /* ---------- HOME (vibes + favoritos) ---------- */
+    let homeTab = 'all';
+    let vibeAtiva = 'todos';
+
+    function switchHomeTab(tab, btn) {
+      homeTab = tab;
+      $$('.tabs button').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      renderHome();
+    }
+
+    function filtrarPorVibe(vibe, btn) {
+      vibeAtiva = vibe;
+      $$('.vibe-chips .chip').forEach(b => b.classList.remove('active'));
+      if (btn) btn.classList.add('active');
+      renderHome();
+    }
+
+    function buscaConversacional() {
+      const term = ($('#mainSearch').value || '').toLowerCase().trim();
+      if (!term) { vibeAtiva = 'todos'; renderHome(); return; }
+      if (term.match(/pesca|rio|pesqueiro/)) { vibeAtiva = 'pescaria'; renderHome(); }
+      else if (term.match(/piscina|piscinão/)) { vibeAtiva = 'piscina'; renderHome(); }
+      else if (term.match(/festa|evento|balada/)) { vibeAtiva = 'festas'; renderHome(); }
+      else if (term.match(/romântico|romantico|casal|luau/)) { vibeAtiva = 'romantico'; renderHome(); }
+      else if (term.match(/família|familia|criança/)) { vibeAtiva = 'familia'; renderHome(); }
+      else { renderHome(); }
+    }
+
+    function ranchAvg(r) { if (!r.avaliacoes?.length) return 0; return r.avaliacoes.reduce((a, b) => a + b.nota, 0) / r.avaliacoes.length; }
+
+    function cardVibeHTML(r) {
+      const cur = get(LS.CUR, {}).usuario;
+      const favs = get(LS.FAV, {})[cur] || [];
+      const isFav = favs.includes(r.id);
+      const avg = ranchAvg(r);
+      const foto = r.fotos?.[0] || 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=1200&q=70';
+      return `<article class="vibe-card" onclick="abrirDetalhes('${r.id}')">
+    <div style="position:relative">
+      <img src="${foto}" alt="${r.nome}" loading="lazy" />
+      <button class="fav-heart ${isFav ? 'is-fav' : ''}" onclick="event.stopPropagation();toggleFav('${r.id}', this)" aria-label="Favoritar"><span class="icon">favorite</span></button>
+    </div>
+    <div class="vibe-body">
+      <h4>${r.nome}</h4>
+      <div class="vibe-meta"><span class="icon sm">location_on</span>${r.cidade}</div>
+      <div class="vibe-footer">
+        <div class="price">${fmtBRL(r.preco)} <small>/ diária</small></div>
+        <span class="rating"><span class="icon">star</span>${avg ? avg.toFixed(1) : 'novo'}</span>
+      </div>
+    </div>
+  </article>`;
+    }
+
+    function renderHome() {
+      const all = get(LS.RANCHES, []).filter(r => (r.fotos || []).length > 0);
+      const term = ($('#mainSearch').value || '').toLowerCase().trim();
+      const cur = get(LS.CUR, {}).usuario;
+      const favs = get(LS.FAV, {})[cur] || [];
+
+      let list = all;
+      if (term) list = list.filter(r => r.nome.toLowerCase().includes(term) || r.cidade.toLowerCase().includes(term));
+      if (vibeAtiva !== 'todos') list = list.filter(r => (r.vibes || []).includes(vibeAtiva));
+
+      // filtro de favoritos
+      if (homeTab === 'fav') {
+        vibeAtiva = 'todos'; // reseta vibes ao trocar para favoritos
+        list = list.filter(r => favs.includes(r.id));
+      }
+
+      const root = $('#homeSections');
+      if (!list.length) {
+        root.innerHTML = `<div class="empty"><div class="icon">${homeTab === 'fav' ? 'favorite' : 'search_off'}</div><h3>${homeTab === 'fav' ? 'Nenhum favorito ainda' : 'Nada encontrado'}</h3><p>${homeTab === 'fav' ? 'Salve ranchos clicando no coração.' : 'Tente outra cidade ou ajuste os filtros.'}</p></div>`;
+        return;
+      }
+
+      // vibes (somente na aba explorar)
+      const vibesDisponiveis = [...new Set(all.flatMap(r => r.vibes || []))];
+      const vibesHTML = homeTab === 'all' ? `
+    <h2 class="section-title">O que anda procurando?</h2>
+    <div class="vibe-chips">
+      <button class="chip ${vibeAtiva === 'todos' ? 'active' : ''}" onclick="filtrarPorVibe('todos', this)">Todos</button>
+      ${vibesDisponiveis.map(v => `<button class="chip ${vibeAtiva === v ? 'active' : ''}" onclick="filtrarPorVibe('${v}', this)">${{ pescaria: '🎣 Pesca', piscina: '🏊 Piscina', festas: '🎉 Festa', romantico: '💑 Romântico', familia: '👨‍👩‍👧‍👦 Família' }[v] || v}</button>`).join('')}
+    </div>` : `<h2 class="section-title">Seus favoritos</h2>`;
+
+      root.innerHTML = `
+    ${vibesHTML}
+    <div class="scroll-horizontal">${list.map(cardVibeHTML).join('')}</div>
+  `;
+    }
+
+    /* ---------- favoritos ---------- */
+    function toggleFav(id, el, fromDetail) {
+      const cur = get(LS.CUR, {}).usuario;
+      const fav = get(LS.FAV, {});
+      fav[cur] = fav[cur] || [];
+      const i = fav[cur].indexOf(id);
+      if (i >= 0) { fav[cur].splice(i, 1); toast('Removido dos favoritos.', 'info'); }
+      else { fav[cur].push(id); toast('Adicionado aos favoritos.', 'success'); }
+      set(LS.FAV, fav);
+      if (el && !fromDetail) { el.classList.toggle('is-fav'); }
+      if (fromDetail) {
+        const isFav = fav[cur].includes(id);
+        $('#dFavIcon').style.fontVariationSettings = isFav ? "'FILL' 1" : "'FILL' 0";
+        $('#dFavIcon').style.color = isFav ? 'var(--danger)' : '';
+        $('#dFavLabel').textContent = isFav ? 'Favorito' : 'Favoritar';
+      }
+    }
+
+    /* ---------- DETAIL ---------- */
+    let currentRanch = null;
+    let mapInstance = null;
+
+    function abrirDetalhes(id) {
+      const r = get(LS.RANCHES, []).find(x => x.id === id);
+      if (!r) return;
+      currentRanch = r;
+      goto('detail');
+
+      const heroImg = r.fotos?.[0] || 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=1600&q=70';
+      $('#heroDetail').style.backgroundImage = `url('${heroImg}')`;
+      $('#heroTitle').textContent = r.nome;
+      $('#heroMeta').innerHTML = `<span>📍 ${r.cidade}</span><span>👥 Até ${r.capacidade} pessoas</span><span class="rating"><span class="icon">star</span>${ranchAvg(r).toFixed(1)}</span>`;
+
+      $('#dSubtitle').textContent = `Espaço em ${r.cidade}`;
+      $('#dDesc').textContent = r.descricao;
+      $('#dRules').textContent = r.regras || 'Sem regras adicionais informadas.';
+      $('#dPrice').textContent = fmtBRL(r.preco);
+      $('#dCap').textContent = r.capacidade;
+
+      const sel = $('#dHospedes'); sel.innerHTML = '';
+      for (let i = 1; i <= r.capacidade; i++) sel.insertAdjacentHTML('beforeend', `<option value="${i}">${i} pessoa${i > 1 ? 's' : ''}</option>`);
+
+      const amen = ['Piscina', 'Churrasqueira', 'Wi-Fi', 'Estacionamento', 'Cozinha completa', 'Lareira', 'Vista panorâmica', 'Animais permitidos'];
+      $('#dAmenities').innerHTML = amen.slice(0, 5 + Math.floor(Math.random() * 3)).map(a => `<span><span class="icon sm">check_circle</span>${a}</span>`).join('');
+
+      $('#dCheckin').value = todayISO();
+      $('#dCheckout').value = addDaysISO(todayISO(), 2);
+      atualizarTotal();
+
+      if (mapInstance) { try { mapInstance.remove(); } catch (_) { } mapInstance = null; }
+      const mapEl = document.getElementById('mapEl');
+      mapEl.innerHTML = '<div style="display:grid;place-items:center;height:100%;color:var(--text-muted);font-size:14px"><span class="icon" style="margin-right:6px">map</span> Carregando mapa…</div>';
+      const initMap = () => {
+        if (mapInstance) return;
+        mapEl.innerHTML = '';
+        mapInstance = L.map(mapEl, { scrollWheelZoom: false, zoomControl: true }).setView([r.lat, r.lng], 11);
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png',
+          { attribution: '© OpenStreetMap · © CARTO', subdomains: 'abcd', maxZoom: 18 }).addTo(mapInstance);
+        L.marker([r.lat, r.lng]).addTo(mapInstance).bindPopup(r.nome).openPopup();
+        requestAnimationFrame(() => mapInstance && mapInstance.invalidateSize());
+      };
+      const io = new IntersectionObserver((entries) => {
+        if (entries[0].isIntersecting) { io.disconnect(); initMap(); }
+      }, { rootMargin: '200px' });
+      io.observe(mapEl);
+
+      renderReviews(r);
+
+      const cur = get(LS.CUR, {}).usuario;
+      const favs = get(LS.FAV, {})[cur] || [];
+      const isFav = favs.includes(r.id);
+      $('#dFavIcon').style.fontVariationSettings = isFav ? "'FILL' 1" : "'FILL' 0";
+      $('#dFavIcon').style.color = isFav ? 'var(--danger)' : '';
+      $('#dFavLabel').textContent = isFav ? 'Favorito' : 'Favoritar';
+    }
+
+    function renderReviews(r) {
+      const list = r.avaliacoes || [];
+      const avg = ranchAvg(r);
+      $('#dAvgRating').textContent = avg ? avg.toFixed(1) : '—';
+      $('#dRatingCount').textContent = list.length;
+      $('#dReviews').innerHTML = list.length ? list.map(rv => `
+    <div class="review">
+      <div class="who"><div class="avatar">${(rv.usuario || '?')[0].toUpperCase()}</div><strong>${rv.usuario}</strong>
+        <span class="rating" style="margin-left:auto">${'★'.repeat(rv.nota)}<span class="muted">${'★'.repeat(5 - rv.nota)}</span></span>
+      </div>
+      <p style="margin:0;color:var(--text-soft)">${rv.texto}</p>
+    </div>`).join('') : `<p class="muted">Ainda sem avaliações. Seja o primeiro!</p>`;
+
+      const cur = get(LS.CUR, {}).usuario;
+      const reservas = get(LS.RESERV, []);
+      const podeAvaliar = reservas.some(rv => rv.ranchoId === r.id && rv.usuario === cur && new Date(rv.checkout) < new Date());
+      $('#dReviewForm').classList.toggle('hidden', !podeAvaliar);
+    }
+
+    function enviarAvaliacao() {
+      const nota = +$('#rvNota').value;
+      const texto = $('#rvTexto').value.trim();
+      if (!texto) { toast('Escreva um comentário antes de enviar.', 'warn'); return; }
+      const ranches = get(LS.RANCHES, []);
+      const idx = ranches.findIndex(r => r.id === currentRanch.id);
+      ranches[idx].avaliacoes.push({ nota, texto, usuario: get(LS.CUR, {}).usuario });
+      set(LS.RANCHES, ranches);
+      currentRanch = ranches[idx];
+      $('#rvTexto').value = '';
+      renderReviews(currentRanch);
+      toast('Avaliação enviada. Obrigado!', 'success');
+    }
+
+    function atualizarTotal() {
+      const r = currentRanch; if (!r) return;
+      const ci = $('#dCheckin').value, co = $('#dCheckout').value;
+      const dias = diffDays(ci, co);
+      $('#dTotal').textContent = fmtBRL(dias * r.preco);
+    }
+
+    function temConflito(ranchoId, ci, co) {
+      const reservas = get(LS.RESERV, []).filter(r => r.ranchoId === ranchoId);
+      return reservas.some(r => !(co <= r.checkin || ci >= r.checkout));
+    }
+
+    function reservar() {
+      const r = currentRanch; const cur = get(LS.CUR, {});
+      const ci = $('#dCheckin').value, co = $('#dCheckout').value;
+      if (!ci || !co) { toast('Selecione check-in e check-out.', 'warn'); return; }
+      if (new Date(co) <= new Date(ci)) { toast('O check-out deve ser depois do check-in.', 'warn'); return; }
+      if (temConflito(r.id, ci, co)) { toast('Estas datas já estão ocupadas.', 'error'); return; }
+      if (r.anfitriao === cur.usuario) { toast('Você não pode reservar a sua própria propriedade.', 'warn'); return; }
+      const reservas = get(LS.RESERV, []);
+      reservas.push({ id: uid(), ranchoId: r.id, usuario: cur.usuario, checkin: ci, checkout: co, status: 'confirmada' });
+      set(LS.RESERV, reservas);
+      toast(`Reserva confirmada em ${r.nome}!`, 'success', 'Tudo certo');
+    }
+
+    /* ---------- HOST PANEL ---------- */
+    let hostTab = 'mybookings';
+    let chartInstance = null;
+    function switchHostTab(t, btn) {
+      hostTab = t;
+      $$('.panel-tabs button').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      ['mybookings', 'myprops', 'newprop', 'dash'].forEach(s => $('#host-' + s).classList.toggle('hidden', s !== t));
+      if (t === 'dash') renderDash();
+      if (t === 'myprops') renderMyProps();
+    }
+
+    function renderHost() {
+      renderMyBookings();
+      renderMyProps();
+      switchHostTab('mybookings', $$('.panel-tabs button')[0]);
+    }
+
+    function renderMyBookings() {
+      const cur = get(LS.CUR, {}).usuario;
+      const reservas = get(LS.RESERV, []).filter(r => r.usuario === cur);
+      const ranches = get(LS.RANCHES, []);
+      const root = $('#host-mybookings');
+      if (!reservas.length) {
+        root.innerHTML = `<div class="empty"><div class="icon">luggage</div><h3>Você ainda não tem reservas</h3><p>Que tal explorar algumas propriedades?</p><div style="margin-top:14px"><button class="btn" onclick="goto('home')"><span class="icon">explore</span> Explorar</button></div></div>`;
+        return;
+      }
+      root.innerHTML = `<div class="info-block"><h2>Suas reservas</h2>${reservas.map(rv => {
+        const r = ranches.find(x => x.id === rv.ranchoId) || { nome: '(removida)', cidade: '' };
+        return `<div class="reservation-row">
+      <div class="who"><div class="avatar"><span class="icon sm">cottage</span></div><div><strong>${r.nome}</strong><div class="muted" style="font-size:13px">${r.cidade} · ${rv.checkin} → ${rv.checkout}</div></div></div>
+      <span class="tag"><span class="icon sm">event_available</span> ${rv.status}</span>
+    </div>`;
+      }).join('')}</div>`;
+    }
+
+    function renderMyProps() {
+      const cur = get(LS.CUR, {}).usuario;
+      const minhas = get(LS.RANCHES, []).filter(r => r.anfitriao === cur);
+      const reservas = get(LS.RESERV, []);
+      const root = $('#host-myprops');
+      if (!minhas.length) {
+        root.innerHTML = `<div class="empty"><div class="icon">villa</div><h3>Nenhuma propriedade cadastrada</h3><p>Cadastre sua chácara, rancho ou sítio para começar a receber hóspedes.</p></div>`;
+        return;
+      }
+      root.innerHTML = minhas.map(r => {
+        const minhasReservas = reservas.filter(x => x.ranchoId === r.id);
+        return `<div class="prop-row">
+      <div>
+        <div class="row-between"><div><h4>${r.nome}</h4><div class="muted"><span class="icon sm">location_on</span>${r.cidade} · até ${r.capacidade} pessoas · ${fmtBRL(r.preco)}/diária</div></div><span class="tag">${minhasReservas.length} reserva${minhasReservas.length !== 1 ? 's' : ''}</span></div>
+        <div style="margin-top:12px;max-height:240px;overflow:auto">
+          ${minhasReservas.length ? minhasReservas.map(rv => `
+            <div class="reservation-row">
+              <div class="who"><div class="avatar">${rv.usuario[0].toUpperCase()}</div><div><strong>${rv.usuario}</strong><div class="muted" style="font-size:13px">${rv.checkin} → ${rv.checkout}</div></div></div>
+              <button class="btn ghost" onclick="cancelarReserva('${rv.id}')"><span class="icon sm">close</span><span>Cancelar</span></button>
+            </div>`).join('') : `<p class="muted">Sem reservas ainda.</p>`}
+        </div>
+      </div>
+      <div>
+        <strong style="display:block;margin-bottom:8px">Disponibilidade</strong>
+        <div class="mini-cal" id="cal-${r.id}"></div>
+      </div>
+    </div>`;
+      }).join('');
+
+      setTimeout(() => {
+        minhas.forEach(r => {
+          const el = document.getElementById('cal-' + r.id); if (!el) return;
+          const events = reservas.filter(x => x.ranchoId === r.id).map(rv => ({ title: 'Reservado', start: rv.checkin, end: rv.checkout, allDay: true }));
+          const cal = new FullCalendar.Calendar(el, {
+            initialView: 'dayGridMonth', height: 340, locale: 'pt-br',
+            headerToolbar: { left: 'prev,next', center: 'title', right: 'today' },
+            buttonText: { today: 'Hoje' }, events
+          });
+          cal.render();
+        });
+      }, 30);
+    }
+
+    function cancelarReserva(id) {
+      openModal({
+        title: 'Cancelar reserva?', message: 'O hóspede será notificado e a data ficará livre novamente.', confirmText: 'Cancelar reserva', danger: true,
+        onConfirm: () => {
+          const reservas = get(LS.RESERV, []).filter(r => r.id !== id);
+          set(LS.RESERV, reservas);
+          toast('Reserva cancelada.', 'info');
+          renderMyProps();
+        }
+      });
+    }
+
+    function cadastrarRancho(e) {
+      e.preventDefault();
+      const cur = get(LS.CUR, {}).usuario;
+      const novo = {
+        id: uid(),
+        nome: $('#npNome').value.trim(),
+        cidade: $('#npCidade').value.trim(),
+        capacidade: +$('#npCap').value,
+        preco: +$('#npPreco').value,
+        descricao: $('#npDesc').value.trim() || 'Espaço lindo para descansar.',
+        regras: $('#npRegras').value.trim() || 'Tratar o espaço com carinho.',
+        fotos: [$('#npFoto').value.trim() || 'https://images.unsplash.com/photo-1505691938895-1758d7feb511?auto=format&fit=crop&w=1400&q=70'],
+        lat: -22 + Math.random() * 4, lng: -50 + Math.random() * 4,
+        vibes: ['familia'],
+        avaliacoes: [],
+        anfitriao: cur
+      };
+      const ranches = get(LS.RANCHES, []); ranches.push(novo); set(LS.RANCHES, ranches);
+      e.target.reset();
+      toast('Sua propriedade foi publicada!', 'success');
+      switchHostTab('myprops', $$('.panel-tabs button')[1]);
+    }
+
+    function renderDash() {
+      const cur = get(LS.CUR, {}).usuario;
+      const minhasIds = get(LS.RANCHES, []).filter(r => r.anfitriao === cur).map(r => r.id);
+      const reservas = get(LS.RESERV, []).filter(r => minhasIds.includes(r.ranchoId));
+      const labels = []; const counts = [];
+      const now = new Date();
+      for (let i = 5; i >= 0; i--) {
+        const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+        labels.push(d.toLocaleString('pt-BR', { month: 'short' }).replace('.', ''));
+        counts.push(reservas.filter(r => {
+          const dd = new Date(r.checkin);
+          return dd.getMonth() === d.getMonth() && dd.getFullYear() === d.getFullYear();
+        }).length);
+      }
+      if (chartInstance) { chartInstance.destroy(); }
+      const ctx = document.getElementById('dashChart');
+      chartInstance = new Chart(ctx, {
+        type: 'bar',
+        data: { labels, datasets: [{ label: 'Reservas', data: counts, backgroundColor: 'rgba(58,113,82,.85)', borderRadius: 8 }] },
+        options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { precision: 0 } } } }
+      });
+    }
+
+    /* ---------- TOUR ---------- */
+    function startTour() {
+      const steps = [
+        { icon: '🌳', title: 'Encontre seu lugar', text: 'Pesquise por cidade ou pelo que deseja fazer: pescaria, descanso, festa…' },
+        { icon: '📅', title: 'Reserve em segundos', text: 'Escolha as datas e pronto. Sem enrolação, sem cobrança antecipada.' },
+        { icon: '❤️', title: 'Cuide com carinho', text: 'Avalie sua estadia e ajude outros viajantes.' }
+      ];
+      let i = 0;
+      const next = () => {
+        if (i >= steps.length) { set(LS.FIRST, false); return; }
+        const s = steps[i];
+        infoModal({ title: `${s.icon} ${s.title}`, body: s.text, ok: i === steps.length - 1 ? 'Vamos lá' : 'Próximo', onOk: () => { i++; next(); } });
+      };
+      next();
+    }
+
+    /* ---------- BOOT ---------- */
+    seed();
+    if (get(LS.CUR, null)) startApp();
+  </script>
+</body>
+
+</html>
