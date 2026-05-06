@@ -1360,31 +1360,35 @@
 
         <form id="formLogin" onsubmit="onLogin(event)">
           <div class="field">
-            <label for="loginUser">Nome de usuário</label>
-            <input id="loginUser" type="text" autocomplete="username" required />
+            <label for="loginId">E-mail ou CPF/CNPJ</label>
+            <input id="loginId" type="text" autocomplete="username" required placeholder="admin@jem.com" />
           </div>
           <div class="field">
             <label for="loginPass">Senha</label>
-            <input id="loginPass" type="password" autocomplete="current-password" required />
+            <input id="loginPass" type="password" autocomplete="current-password" required placeholder="••••••" />
           </div>
           <div style="margin-top:18px"><button class="btn lg block" type="submit"><span class="icon">login</span>
               Entrar</button></div>
-          <p class="muted" style="text-align:center;margin-top:14px;font-size:14px">Dica: experimente <strong>admin /
-              admin</strong></p>
+          <p class="muted" style="text-align:center;margin-top:14px;font-size:14px">Dica: use
+            <strong>admin@jem.com</strong> / <strong>admin</strong></p>
         </form>
 
         <form id="formSignup" class="hidden" onsubmit="onSignup(event)">
           <div class="field">
-            <label for="signName">Seu nome completo</label>
-            <input id="signName" type="text" required />
+            <label for="signName">Nome completo</label>
+            <input id="signName" type="text" required placeholder="Seu nome" />
           </div>
           <div class="field">
-            <label for="signUser">Nome de usuário</label>
-            <input id="signUser" type="text" required />
+            <label for="signDoc">CPF ou CNPJ (apenas um)</label>
+            <input id="signDoc" type="text" required placeholder="000.000.000-00 ou 00.000.000/0000-00" />
+          </div>
+          <div class="field">
+            <label for="signEmail">E-mail</label>
+            <input id="signEmail" type="email" required placeholder="voce@exemplo.com" />
           </div>
           <div class="field">
             <label for="signPass">Crie uma senha (mín. 3 caracteres)</label>
-            <input id="signPass" type="password" minlength="3" required />
+            <input id="signPass" type="password" minlength="3" required placeholder="••••••" />
           </div>
           <div style="margin-top:18px"><button class="btn lg block accent" type="submit"><span
                 class="icon">person_add</span> Criar minha conta</button></div>
@@ -1677,7 +1681,12 @@
     /* ---------- seed ---------- */
     function seed() {
       if (!get(LS.USERS, null)) {
-        set(LS.USERS, [{ nome: 'Administrador JEM', usuario: 'admin', senha: 'admin' }]);
+        set(LS.USERS, [{
+          nome: 'Administrador JEM',
+          documento: '000.000.000-00',
+          email: 'admin@jem.com',
+          senha: 'admin'
+        }]);
       }
       if (!get(LS.RANCHES, null)) {
         set(LS.RANCHES, [
@@ -1740,24 +1749,30 @@
     }
     function onLogin(e) {
       e.preventDefault();
-      const u = $('#loginUser').value.trim();
-      const p = $('#loginPass').value;
-      const user = get(LS.USERS, []).find(x => x.usuario === u && x.senha === p);
-      if (!user) { toast('Usuário ou senha incorretos.', 'error'); return; }
+      const login = $('#loginId').value.trim();
+      const senha = $('#loginPass').value.trim();
+      if (!login || !senha) { toast('Preencha todos os campos.', 'warn'); return; }
+      const user = get(LS.USERS, []).find(x => (x.email === login || x.documento === login) && x.senha === senha);
+      if (!user) { toast('E-mail/CPF/CNPJ ou senha incorretos.', 'error'); return; }
       set(LS.CUR, user);
       startApp();
     }
     function onSignup(e) {
       e.preventDefault();
       const nome = $('#signName').value.trim();
-      const usuario = $('#signUser').value.trim();
+      const documento = $('#signDoc').value.trim();
+      const email = $('#signEmail').value.trim();
       const senha = $('#signPass').value;
+      if (!nome || !documento || !email || !senha) { toast('Preencha todos os campos.', 'warn'); return; }
       if (senha.length < 3) { toast('A senha precisa ter pelo menos 3 caracteres.', 'warn'); return; }
+      // verifica se o email ou documento já existem
       const users = get(LS.USERS, []);
-      if (users.some(u => u.usuario === usuario)) { toast('Esse nome de usuário já está em uso.', 'warn'); return; }
-      users.push({ nome, usuario, senha });
+      if (users.some(u => u.email === email)) { toast('Este e-mail já está cadastrado.', 'warn'); return; }
+      if (users.some(u => u.documento === documento)) { toast('Este CPF/CNPJ já está cadastrado.', 'warn'); return; }
+      const novo = { nome, documento, email, senha };
+      users.push(novo);
       set(LS.USERS, users);
-      set(LS.CUR, { nome, usuario, senha });
+      set(LS.CUR, novo);
       toast('Conta criada. Bem-vindo ao JEM!', 'success');
       startApp();
     }
@@ -1822,7 +1837,7 @@
     function ranchAvg(r) { if (!r.avaliacoes?.length) return 0; return r.avaliacoes.reduce((a, b) => a + b.nota, 0) / r.avaliacoes.length; }
 
     function cardVibeHTML(r) {
-      const cur = get(LS.CUR, {}).usuario;
+      const cur = get(LS.CUR, {}).email;
       const favs = get(LS.FAV, {})[cur] || [];
       const isFav = favs.includes(r.id);
       const avg = ranchAvg(r);
@@ -1846,16 +1861,15 @@
     function renderHome() {
       const all = get(LS.RANCHES, []).filter(r => (r.fotos || []).length > 0);
       const term = ($('#mainSearch').value || '').toLowerCase().trim();
-      const cur = get(LS.CUR, {}).usuario;
+      const cur = get(LS.CUR, {}).email;
       const favs = get(LS.FAV, {})[cur] || [];
 
       let list = all;
       if (term) list = list.filter(r => r.nome.toLowerCase().includes(term) || r.cidade.toLowerCase().includes(term));
       if (vibeAtiva !== 'todos') list = list.filter(r => (r.vibes || []).includes(vibeAtiva));
 
-      // filtro de favoritos
       if (homeTab === 'fav') {
-        vibeAtiva = 'todos'; // reseta vibes ao trocar para favoritos
+        vibeAtiva = 'todos';
         list = list.filter(r => favs.includes(r.id));
       }
 
@@ -1865,7 +1879,6 @@
         return;
       }
 
-      // vibes (somente na aba explorar)
       const vibesDisponiveis = [...new Set(all.flatMap(r => r.vibes || []))];
       const vibesHTML = homeTab === 'all' ? `
     <h2 class="section-title">O que anda procurando?</h2>
@@ -1882,7 +1895,7 @@
 
     /* ---------- favoritos ---------- */
     function toggleFav(id, el, fromDetail) {
-      const cur = get(LS.CUR, {}).usuario;
+      const cur = get(LS.CUR, {}).email;
       const fav = get(LS.FAV, {});
       fav[cur] = fav[cur] || [];
       const i = fav[cur].indexOf(id);
@@ -1948,7 +1961,7 @@
 
       renderReviews(r);
 
-      const cur = get(LS.CUR, {}).usuario;
+      const cur = get(LS.CUR, {}).email;
       const favs = get(LS.FAV, {})[cur] || [];
       const isFav = favs.includes(r.id);
       $('#dFavIcon').style.fontVariationSettings = isFav ? "'FILL' 1" : "'FILL' 0";
@@ -1969,7 +1982,7 @@
       <p style="margin:0;color:var(--text-soft)">${rv.texto}</p>
     </div>`).join('') : `<p class="muted">Ainda sem avaliações. Seja o primeiro!</p>`;
 
-      const cur = get(LS.CUR, {}).usuario;
+      const cur = get(LS.CUR, {}).email;
       const reservas = get(LS.RESERV, []);
       const podeAvaliar = reservas.some(rv => rv.ranchoId === r.id && rv.usuario === cur && new Date(rv.checkout) < new Date());
       $('#dReviewForm').classList.toggle('hidden', !podeAvaliar);
@@ -1981,7 +1994,7 @@
       if (!texto) { toast('Escreva um comentário antes de enviar.', 'warn'); return; }
       const ranches = get(LS.RANCHES, []);
       const idx = ranches.findIndex(r => r.id === currentRanch.id);
-      ranches[idx].avaliacoes.push({ nota, texto, usuario: get(LS.CUR, {}).usuario });
+      ranches[idx].avaliacoes.push({ nota, texto, usuario: get(LS.CUR, {}).email });
       set(LS.RANCHES, ranches);
       currentRanch = ranches[idx];
       $('#rvTexto').value = '';
@@ -2007,9 +2020,9 @@
       if (!ci || !co) { toast('Selecione check-in e check-out.', 'warn'); return; }
       if (new Date(co) <= new Date(ci)) { toast('O check-out deve ser depois do check-in.', 'warn'); return; }
       if (temConflito(r.id, ci, co)) { toast('Estas datas já estão ocupadas.', 'error'); return; }
-      if (r.anfitriao === cur.usuario) { toast('Você não pode reservar a sua própria propriedade.', 'warn'); return; }
+      if (r.anfitriao === cur.email) { toast('Você não pode reservar a sua própria propriedade.', 'warn'); return; }
       const reservas = get(LS.RESERV, []);
-      reservas.push({ id: uid(), ranchoId: r.id, usuario: cur.usuario, checkin: ci, checkout: co, status: 'confirmada' });
+      reservas.push({ id: uid(), ranchoId: r.id, usuario: cur.email, checkin: ci, checkout: co, status: 'confirmada' });
       set(LS.RESERV, reservas);
       toast(`Reserva confirmada em ${r.nome}!`, 'success', 'Tudo certo');
     }
@@ -2033,7 +2046,7 @@
     }
 
     function renderMyBookings() {
-      const cur = get(LS.CUR, {}).usuario;
+      const cur = get(LS.CUR, {}).email;
       const reservas = get(LS.RESERV, []).filter(r => r.usuario === cur);
       const ranches = get(LS.RANCHES, []);
       const root = $('#host-mybookings');
@@ -2051,7 +2064,7 @@
     }
 
     function renderMyProps() {
-      const cur = get(LS.CUR, {}).usuario;
+      const cur = get(LS.CUR, {}).email;
       const minhas = get(LS.RANCHES, []).filter(r => r.anfitriao === cur);
       const reservas = get(LS.RESERV, []);
       const root = $('#host-myprops');
@@ -2107,7 +2120,7 @@
 
     function cadastrarRancho(e) {
       e.preventDefault();
-      const cur = get(LS.CUR, {}).usuario;
+      const cur = get(LS.CUR, {}).email;
       const novo = {
         id: uid(),
         nome: $('#npNome').value.trim(),
@@ -2129,7 +2142,7 @@
     }
 
     function renderDash() {
-      const cur = get(LS.CUR, {}).usuario;
+      const cur = get(LS.CUR, {}).email;
       const minhasIds = get(LS.RANCHES, []).filter(r => r.anfitriao === cur).map(r => r.id);
       const reservas = get(LS.RESERV, []).filter(r => minhasIds.includes(r.ranchoId));
       const labels = []; const counts = [];
