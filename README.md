@@ -20,9 +20,9 @@ Este projeto foi desenvolvido utilizando as tecnologias mais modernas do mercado
 - **Sistema de Reservas**: Calendário interativo para verificação de disponibilidade e solicitação de reserva.
 - **Interface Responsiva**: Design "Clean & Minimalist" focado na experiência do usuário.
 
-## ⚙️ Como rodar o projeto
-
+<!-- ## ⚙️ Como rodar o projeto
 1. **Clone o repositório**:
 ```bash
    git clone [https://github.com/joaovssouza-dev/jEM.git](https://github.com/joaovssouza-dev/jEM.git)
    cd jEM
+-->
