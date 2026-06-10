@@ -1,0 +1,30 @@
+@import "tailwindcss";
+
+@theme {
+  --color-jem-primary: #2f4f4f;
+  /* Verde Musgo Profundo */
+  --color-jem-secondary: #e8ecec;
+  /* Fundo de botões secundários */
+  --color-jem-accent: #556b2f;
+  /* Verde de destaque (Pulse/Hover) */
+  --color-jem-text: #1e2e2e;
+  /* Quase preto esverdeado para textos */
+
+  --font-sans: "Inter", sans-serif;
+}
+
+body {
+  background-color: #f4f7f6;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 10px;
+}
