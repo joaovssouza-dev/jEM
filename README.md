@@ -1,16 +1,28 @@
-# React + Vite
+# JEM - Gestão de Espaços para Lazer
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+O JEM é uma plataforma dedicada à gestão e locação de espaços de lazer, como ranchos e chácaras, conectando proprietários a locatários de forma simples, intuitiva e moderna.
 
-Currently, two official plugins are available:
+## 🚀 Tecnologias Utilizadas
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+Este projeto foi desenvolvido utilizando as tecnologias mais modernas do mercado:
 
-## React Compiler
+- **Frontend**: [React.js](https://react.dev/) com [Vite](https://vitejs.dev/)
+- **Estilização**: [Tailwind CSS](https://tailwindcss.com/)
+- **Integração de Dados**: [Supabase](https://supabase.com/) (Backend-as-a-Service)
+- **Mapas**: [React Leaflet](https://react-leaflet.js.org/)
+- **Ícones**: [Lucide React](https://lucide.dev/)
+- **Calendário**: [React Calendar](https://www.npmjs.com/package/react-calendar)
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## 📋 Funcionalidades
 
-## Expanding the ESLint configuration
+- **Vitrine de Ranchos**: Visualização detalhada de propriedades disponíveis.
+- **Cadastro Profissional**: Formulário completo para proprietários anunciarem seus espaços, com validação de CEP e geolocalização.
+- **Sistema de Reservas**: Calendário interativo para verificação de disponibilidade e solicitação de reserva.
+- **Interface Responsiva**: Design "Clean & Minimalist" focado na experiência do usuário.
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## ⚙️ Como rodar o projeto
+
+1. **Clone o repositório**:
+```bash
+   git clone [https://github.com/joaovssouza-dev/jEM.git](https://github.com/joaovssouza-dev/jEM.git)
+   cd jEM
